@@ -1,7 +1,7 @@
 Hibernate : HQL  truy vấn trong hibernate -> session dữ liệu thu nhỏ , dụa vào đối u\tượng cụ thể ORM 
 Java : JPQL truy vấn persition query language -> EntityManager dữ liệu thu nhỏ
  
- 
+ 1- các lênh truy vấn 
  - truy vấn trong mysql dung hibernate khác với sql nhé
  - ko dùng được limite
  - phải dùng left join fetch
@@ -21,4 +21,11 @@ on ct.Ma_sua = s.Ma_sua group by 1 order by sum(ct.So_luong) desc limit 0,5
 
    @ trên hibnate : select s, sum(ct.soLuong) as tsl from Sua s join s.ctHoadons ct
 group by s order by tsl desc
-  @  trên servlet : gióng với hibnate
+  @  trên servlet : String sql = "select s,sum(ct.soLuong) as tsl from Sua s left join fetch s.hangSua left join fetch s.loaiSua "
+					+"join s.ctHoadons ct group by s order by tsl desc";
+    nnote : ct.soLuong , s.hangSua, s.loaiSua, s.ctHoadons la các biến trong đối tượng sữa khi left join fetch sẽ ánh xạ đến tên của các biến thông qua 1 table data
+    
+    2- Dùng transaction để thêm đối tượng  trong hibernate :
+                         hành động nhỏ nhất - nhất quán - cô lập - commit
+			 
+       
