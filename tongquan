@@ -1,0 +1,24 @@
+Hibernate : HQL  truy vấn trong hibernate -> session dữ liệu thu nhỏ , dụa vào đối u\tượng cụ thể ORM 
+Java : JPQL truy vấn persition query language -> EntityManager dữ liệu thu nhỏ
+ 
+ 
+ - truy vấn trong mysql dung hibernate khác với sql nhé
+ - ko dùng được limite
+ - phải dùng left join fetch
+ - phai dùng đối số ko dùng kí tự đặt biệt *
+ 
+- các lệnh hql cơ bản về 	lọc tóp 		
+     String sql = "select s from Sua s left join fetch s.hangSua left join fetch s.loaiSua order by s.donGia desc";
+			dsSua = session.createQuery(sql, Sua.class)
+					.setFirstResult(0)
+					.setMaxResults(top)
+					.list();
+          
+- gán list cho query các truy vấn sum count sẽ khác với truy vấn mình thường
+  vd truy vấn 5 loại sữa bán chạy nhất  : 
+     @ trên mysql : select s.*,sum(ct.so_luong) as tsl from sua s inner join ct_hoadon ct 
+on ct.Ma_sua = s.Ma_sua group by 1 order by sum(ct.So_luong) desc limit 0,5
+
+   @ trên hibnate : select s, sum(ct.soLuong) as tsl from Sua s join s.ctHoadons ct
+group by s order by tsl desc
+  @  trên servlet : gióng với hibnate
