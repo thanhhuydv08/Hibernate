@@ -4,6 +4,7 @@
  b3 : list = session.creater.......list();
  
  thêm : thông qua Transaction  ts= session.beginTransaction();
+                               session.persist(ls);
                                ts.commit();
                                ===> phải dùng try catch nếu exception bắt lỗi ts.rollback();
  tìm : ls đối tượng  = get(đối tượng. class, thuộc tính đối tượng).. tại sao vậy vì khi ta get vậy là ta sẽ lấy tất cả các thuộc tính của đối tượng theo thuộc tính truyền vào.
