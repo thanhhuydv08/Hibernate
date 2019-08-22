@@ -1,0 +1,29 @@
+================ kết nối tạo mới hibernate ===================
+- cach ket noi databáe voi eclip -> Data source explore -> new  -> MYSQL đăt lại tên để dẽ theo dõi và xử lý ưu tiên  = ên name data mýql-> databae : tên databse, url : jdbc:mysql://localhost:3306/qlbansua?useUnicode=true&characterEncoding=UTF-8
+   (note nếu hibernate thi them amp; sau dấu & );
+- 1 thư viện hibernate
+- 2 thay đổi đường dẫn & = &amp;
+- 3 cai dat jbosstool để tự phát sinh code
+- 4 cai duong dan cho server qlbansua->diverproties->jdbc:mysql://localhost:3306/qlbansua?useUnicode=true&amp;characterEncoding=UTF-8
+bat buoc co b5 moi dung dc b6
+- 5 open eclp -> window -> perspecties-> other -> hiberbate -> open
+- 6 cửa sỏ hibernate tạo ra -> click + -> chọn ver 5.1 , trỏ tới project dùng hibernate , chọn database "qlbansua",
+-> click phai cua so hibernate -> chọn thanh công cụ Run coonfgfig -> hibernate config -> tại tab Main chọn
+   conso : hibernate, output :src cua project, package : đặt tên entity
+   tại tab Export :check 2 line use java5 -gểnate EJDB3  , check domain code hibnater xml cònigure
+
+* sql cua hibernate trong hib: 
+
+select s.tenSua,s.hangSua.tenHangSua,s.loaiSua.tenLoai,
+ct.hoaDon.soHoaDon,ct.hoaDon.khachHang.tenKhachHang,
+ct.soLuong,ct.donGia from Sua s join s.ctHoadons ct
+* sql ko  tham so trong eclip :
+   
+	String sql = "select s from Sua s left join fetch s.hangSua left join fetch s.loaiSua";
+			dsSua = session.createQuery(sql, Sua.class)list();
+
+* sql co tham so trong eclip : thêm :haHang sau do setparametter
+
+	String sql = "select s from Sua s left join fetch s.hangSua left join fetch s.loaiSua where s.hangSua.maHangSua = :maHang";
+			dsSua = session.createQuery(sql, Sua.class).setParameter("maHang", maHang).list();
+* tai sao co them left join fetch :
