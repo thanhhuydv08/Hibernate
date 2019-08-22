@@ -1,0 +1,232 @@
+ghi chú : tất nhiên để chạy được project này phải có tomcat9, thư viện hibernate, mysql, tất cả phải tạo được tomcat, datasql, tao hibernate để tạo ra các entity 
+1 -file servlet
+2- file businessLogic
+3- file jsp
+note : các bắt sự kiện các nut input kiểu button dụa vào <button value="them" name="btnChon">Thêm</button>
+value và name của button -> nút ở jsp muốn tại servlet bắt được sự kiến chỉ cần acction của form action = trỏ tới servlet 
+-> và tại servlet chỉ cần String button = request.getParameter("btnChon");
+dùng while để case giá trị khi click là thêm, tìm , hay xóa, hay sữa......
+
+
+=======================================file servlet===========================
+package controller;
+
+import java.io.IOException;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import businessLogic.LoaiSuaBL;
+import entity.LoaiSua;
+
+/**
+ * Servlet implementation class LoaiSuaServlet
+ */
+@WebServlet("/LoaiSuaServlet")
+public class LoaiSuaServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public LoaiSuaServlet() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		List<LoaiSua> dsls = LoaiSuaBL.docTatCa();
+		request.setAttribute("dsls", dsls);
+		request.getRequestDispatcher("LoaiSua.jsp").forward(request, response);	
+		
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		String check = request.getParameter("btnChon");
+		String maLoai = request.getParameter("maLoai");
+		String tenLoai = request.getParameter("tenLoai");
+		LoaiSua ls = new LoaiSua();
+		ls.setMaLoaiSua(maLoai);
+		ls.setTenLoai(tenLoai);
+	   switch (check) {
+	   case "them": LoaiSuaBL.them(ls);
+	   System.out.println("đa toi này roi");
+		   break;
+	   case "tim": 
+		      ls= null;
+		      ls = LoaiSuaBL.tim(maLoai);
+		   break;
+	   case "sua":
+		      
+		   break;
+	   case "xoa":
+		   break;
+	   }
+		
+		request.setAttribute("loaiSua", ls);
+		request.setAttribute("dsls", LoaiSuaBL.docTatCa());
+		request.getRequestDispatcher("LoaiSua.jsp").forward(request, response);	
+	//	doGet(request, response);
+	}
+
+}
+
+=====================================file businessLogic (2 file CSDL và file LoaiSuaBL)====================================
+     --------------------------------------LoaiSuaBL.java--------------------------------
+      package businessLogic;
+import java.util.List;
+
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+
+import entity.LoaiSua;
+
+public class LoaiSuaBL {
+	public static List<LoaiSua> docTatCa(){
+		List<LoaiSua> dsls = null;
+		try (Session session = CSDL.getFactory().openSession()){
+			String sql = "select l from LoaiSua l";
+			dsls = session.createQuery(sql,LoaiSua.class).list();
+		} catch (Exception e) {
+			return null;
+		}
+		return dsls;
+	}
+	public static void them(LoaiSua ls) {
+		Session session = CSDL.getFactory().openSession();
+		Transaction tx = null;
+		try{
+			tx = session.beginTransaction();
+			session.persist(ls);
+			tx.commit();
+		} catch (Exception e) {
+			if(tx!=null) tx.rollback();
+		}finally {
+			session.close();
+		}
+	}
+	public static LoaiSua tim(String maLoai) {
+		LoaiSua ls = null;
+		try (Session session = CSDL.getFactory().openSession()){
+			ls = session.get(LoaiSua.class, maLoai);
+		} catch (Exception e) {
+			return null;
+		}
+		return ls;
+	}
+	public static void sua(LoaiSua ls) {
+		Session session = CSDL.getFactory().openSession();
+		Transaction tx = null;
+		try {
+			tx = session.beginTransaction();
+			session.merge(ls);
+			tx.commit();
+		} catch (Exception e) {
+			if(tx!=null) tx.rollback();
+		}finally {
+			session.close();
+		}
+	}
+	public static void xoa(String maLoai) {
+		Session session = CSDL.getFactory().openSession();
+		Transaction tx = null;
+		try {
+			tx = session.beginTransaction();
+			LoaiSua lsx = session.get(LoaiSua.class, maLoai);
+			session.delete(lsx);
+			tx.commit();
+		} catch (Exception e) {
+			if(tx!=null) tx.rollback();
+		}finally {
+			session.close();
+		}
+	}
+}
+
+--------------------------------------CSDL kết nổi theo hibernate---------------------------------------
+
+        package businessLogic;
+
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+
+public class CSDL {
+	private static final SessionFactory factory;
+	static {
+		factory = new Configuration().configure().buildSessionFactory();
+	}
+	public static SessionFactory getFactory() {
+		return factory;
+	}
+}
+
+===============================================file LoaiSua.JSP===============================================
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Cập nhật loại sữa</title>
+        
+
+        
+    </head>
+    <body>
+        <form name="frmLoaiSua" action="LoaiSuaServlet" method="post">
+            <table border="0">
+                <caption>CẬP NHẬT LOẠI SỮA</caption>
+                <tbody>
+                    <tr>
+                        <td>Mã loại</td>
+                        <td><input type="text" name="maLoai" value="${loaiSua.maLoaiSua}" title="Mã loại tối đa 3 ký tự"/></td>
+                    </tr>
+                    <tr>
+                        <td>Tên loại</td>
+                        <td><input type="text" name="tenLoai" value="${loaiSua.tenLoai}" /></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                        	<button value="them" name="btnChon">Thêm</button>
+                        	<button value="tim" name="btnChon">Tìm</button>
+                        	<button value="sua" name="btnChon">Sửa</button>
+                        	<button value="xoa" name="btnChon">Xóa</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </form>
+        <table border="1">
+            <caption>DANH SÁCH LOẠI SỮA</caption>
+            <thead>
+                <tr>
+                    <th>Mã loại</th>
+                    <th>Tên loại</th>
+                </tr>
+            </thead>
+            <tbody>
+            <c:forEach items="${dsls}" var="ls">
+                    <tr>
+                        <td>${ls.maLoaiSua}</td>
+                        <td>${ls.tenLoai}</td>
+                    </tr>
+            </c:forEach>
+            </tbody>
+        </table>
+
+    </body>
+</html>
+    
