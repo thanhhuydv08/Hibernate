@@ -1,0 +1,88 @@
+==================== cách để kết nối dữ liệu từ database thông qua hibernate=======================
+ b1 : getFacatory từ 1 session ;
+ b2 : oppensession();
+ b3 : list = session.creater.......list();
+ 
+ thêm : thông qua Transaction  ts= session.beginTransaction();
+                               ts.commit();
+                               ===> phải dùng try catch nếu exception bắt lỗi ts.rollback();
+ tìm : ls đối tượng  = get(đối tượng. class, thuộc tính đối tượng).. tại sao vậy vì khi ta get vậy là ta sẽ lấy tất cả các thuộc tính của đối tượng theo thuộc tính truyền vào.
+ sua : thông qua Transaction  ts= session.beginTransaction();
+                               session.merge(ls đối tượng);
+                               ts.commit();
+ xóa :  thông qua Transaction  ts= session.beginTransaction();
+        // xóa thông qua maLoai vì vậy tại này ta lấy ra các thuộc tính của loại sữa có maLoai cần xóa 
+        ls đối tượng  = get(đối tượng. class, thuộc tính đối tượng).
+        ts.delete(ls);
+        ts.commit();
+ 
+ ================= sau đây là 1 số sql thông dụng==============================
+ 1. đọc tất cả : 
+        public static List<LoaiSua> docTatCa(){
+		List<LoaiSua> dsls = null;
+		try (Session session = CSDL.getFactory().openSession()){
+			String sql = "select l from LoaiSua l";
+			dsls = session.createQuery(sql,LoaiSua.class).list();
+		} catch (Exception e) {
+			return null;
+		}
+		return dsls;
+	}
+  
+ 2. thêm 1 đối tượng nào đó vào data
+ public static void them(LoaiSua ls) {
+		Session session = CSDL.getFactory().openSession();
+		Transaction tx = null;
+		try{
+			tx = session.beginTransaction();
+			session.persist(ls);
+			tx.commit();
+		} catch (Exception e) {
+			if(tx!=null) tx.rollback();
+		}finally {
+			session.close();
+		}
+	}
+  
+  3. tìm 1 đối tượng trong database
+  public static LoaiSua tim(String maLoai) {
+		LoaiSua ls = null;
+		try (Session session = CSDL.getFactory().openSession()){
+			ls = session.get(LoaiSua.class, maLoai);
+		} catch (Exception e) {
+			return null;
+		}
+		return ls;
+	}
+  4. sửa một đối tượng nào đó 
+  
+  public static void sua(LoaiSua ls) {
+		Session session = CSDL.getFactory().openSession();
+		Transaction tx = null;
+		try {
+			tx = session.beginTransaction();
+			session.merge(ls);
+			tx.commit();
+		} catch (Exception e) {
+			if(tx!=null) tx.rollback();
+		}finally {
+			session.close();
+		}
+	}
+  
+  5. xóa 1 đối tương nào đó
+  public static void xoa(String maLoai) {
+		Session session = CSDL.getFactory().openSession();
+		Transaction tx = null;
+		try {
+			tx = session.beginTransaction();
+			LoaiSua lsx = session.get(LoaiSua.class, maLoai);
+			session.delete(lsx);
+			tx.commit();
+		} catch (Exception e) {
+			if(tx!=null) tx.rollback();
+		}finally {
+			session.close();
+		}
+	}
+ 
