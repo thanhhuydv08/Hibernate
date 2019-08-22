@@ -1,3 +1,6 @@
+- có video trong mediafire.com là các bài học của thầy.
+http://www.mediafire.com/folder/fxh12nbmcglmy/hibernate
+
 ================ kết nối tạo mới hibernate ===================
 - cach ket noi databáe voi eclip -> Data source explore -> new  -> MYSQL đăt lại tên để dẽ theo dõi và xử lý ưu tiên  = ên name data mýql-> databae : tên databse, url : jdbc:mysql://localhost:3306/qlbansua?useUnicode=true&characterEncoding=UTF-8
    (note nếu hibernate thi them amp; sau dấu & );
