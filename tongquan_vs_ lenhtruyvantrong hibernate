@@ -6,7 +6,9 @@ Java : JPQL truy vấn persition query language -> EntityManager dữ liệu thu
  - ko dùng được limite
  - phải dùng left join fetch
  - phai dùng đối số ko dùng kí tự đặt biệt *
- 
+ @@@@@@@@@@@@@@@@@@@@@@@@@@note : truy van trong hibernate khác với mysql thường là truy vấn đến đối tượng nhé 
+                                  vd : select s from Sua s trong đó Sua là lớp đối tượng của entity hibẻnate
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 - các lệnh hql cơ bản về 	lọc tóp 		
      String sql = "select s from Sua s left join fetch s.hangSua left join fetch s.loaiSua order by s.donGia desc";
 			dsSua = session.createQuery(sql, Sua.class)
