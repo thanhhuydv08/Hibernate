@@ -1,0 +1,12 @@
+1. vd đã làm xong hibernate trong eclip tạo ra các đối tượng sua, HangSua, LoaiSua.....
+ --> tôi dựa vào bảng này để làm nhé :
+  1. hàm sum :
+     SELECT ct.Ma_sua , SUM(ct.So_luong) as tsl FROM ct_hoadon as ct  ORDER BY `tsl` DESC LIMIT 0,3 
+     nếu dùng mysql như trên thì sẽ sum hết tất cả các giá trị của cột số lượng 
+     SELECT ct.Ma_sua , SUM(ct.So_luong) as tsl FROM ct_hoadon as ct GROUP BY ct.Ma_sua ORDER BY `tsl` DESC LIMIT 0,3 
+     nếu thêm GROUP BY ct.Ma_sua thì chỉ sum các cột số lượng có mã giống nhau.
+     sql hibernate :   select s, sum(ct.soLuong) as bcn from Sua s left join fetch s.hangSua left join fetch s.loaiSua join s.ctHoadons as ct group by s order by bcn desc
+                       obj = session.createQuery(sql).setFirstResult(0).setMaxResults(3).list();
+                       và trả về là 1 list object ko theo chuẩn của cái nào muốn dùng nó thì gán nó vào đối tượng sữa hau Loại sữa nhé .
+                       
+  2. 
